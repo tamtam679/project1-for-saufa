@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Flashcard English - 10,000</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; text-align: center; background: #f3f4f6; padding: 16px; }
+    .card { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.08); max-width: 720px; margin: 24px auto; cursor: pointer; transition: transform 0.25s ease; }
+    .card:hover { transform: translateY(-4px); }
+    .front { font-size: 28px; font-weight: 700; min-height: 60px; }
+    .back { font-size: 18px; color: #333; margin-top: 12px; min-height: 60px; }
+    .controls { margin-top: 18px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap; }
+    button { padding: 10px 14px; border-radius: 8px; border: none; background: #2563eb; color: white; font-weight:600; cursor:pointer; }
+    button.secondary { background: #6b7280; }
+    input[type=number] { width: 100px; padding:8px; border-radius:8px; border:1px solid #ddd; }
+    .meta { font-size:14px; color:#555; margin-top:8px; }
+  </style>
+</head>
+<body>
+  <h1>Flashcard English — 10,000 Words</h1>
+  <div class="card" id="card" onclick="flipCard()">
+    <div id="front" class="front"></div>
+    <div id="back" class="back" style="display:none;"></div>
+  </div>
+  <div class="controls">
+    <button onclick="prevCard()">⬅️ Prev</button>
+    <button onclick="nextCard()">Next ➡️</button>
+    <button class="secondary" onclick="shuffleCards()">🔀 Shuffle</button>
+    <label>Go to: <input id="goto" type="number" min="1" max="10000" value="1"> <button onclick="gotoCard()">Go</button></label>
+  </div>
+  <div class="meta" id="meta"></div>
+
+  <script src="flashcards.js"></script>
+  <script>
+    let current = 0;
+    const frontEl = document.getElementById('front');
+    const backEl = document.getElementById('back');
+    const meta = document.getElementById('meta');
+
+    function showCard() {
+      const card = flashcards[current];
+      frontEl.textContent = card.word;
+      backEl.textContent = card.back;
+      backEl.style.display = 'none';
+      updateMeta();
+    }
+
+    function flipCard() {
+      if (backEl.style.display === 'none') backEl.style.display = 'block';
+      else backEl.style.display = 'none';
+    }
+
+    function nextCard() {
+      current = (current + 1) % flashcards.length;
+      showCard();
+    }
+
+    function prevCard() {
+      current = (current - 1 + flashcards.length) % flashcards.length;
+      showCard();
+    }
+
+    function shuffleCards() {
+      for (let i = flashcards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [flashcards[i], flashcards[j]] = [flashcards[j], flashcards[i]];
+      }
+      current = 0;
+      showCard();
+    }
+
+    function gotoCard() {
+      const v = parseInt(document.getElementById('goto').value || "1", 10);
+      if (v >= 1 && v <= flashcards.length) {
+        current = v - 1;
+        showCard();
+      }
+    }
+
+    function updateMeta() {
+      meta.textContent = `Card ${current+1} / ${flashcards.length}`;
+    }
+
+    // initial
+    showCard();
+  </script>
+</body>
+</html>
